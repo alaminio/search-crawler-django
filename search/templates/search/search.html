@@ -40,7 +40,7 @@
                     </form>
                 </div>
                 <div class="column">
-                    <a href="{% url 'api_url' %}?search={{ s }}">Access JSON via API</a>
+                    <a href="{% url 'api_url' %}?search={% if s %}{{ s }}{% endif %}">Access JSON via API</a>
                 </div>
             </div>
         </div>
