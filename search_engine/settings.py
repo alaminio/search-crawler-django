@@ -25,7 +25,7 @@ SECRET_KEY = '0ic&nk!ui(9y$x^brs+cly4kjkknaghj9ecc!rz&b*(c0fgq6r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.111.255', 'localhost', '0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.111.255', 'localhost', '0.0.0.0', '127.0.0.1', 'search-crawler-django.herokuapp.com']
 
 
 # Application definition
