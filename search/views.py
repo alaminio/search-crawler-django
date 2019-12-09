@@ -52,8 +52,8 @@ def search(request):
 
 def api(request):
     results = list()
-    if request.GET:
-        s = request.GET["search"]
+    if request.GET and request.GET.get("search"):
+        s = request.GET.get("search")
     else:
         s = False
 
