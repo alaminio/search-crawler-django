@@ -32,35 +32,20 @@ def get_search_result(query):
     return results
 
 def search(request):
-    results = list()
-    if request.GET and request.GET.get("search"):
-        s = request.GET.get("search")
-    else:
-        s = False
-
+    s = False
     context = {'s': s}
 
-    if s:
-        results = get_search_result(s)
-
-        context = {
-            's': s,
-            'results': results
-        }
+    if request.GET and request.GET.get("search"):
+        s = request.GET.get("search")
+        context['s'] = s
+        context['results'] = get_search_result(s)
 
     return render(request, 'search/search.html', context)
 
 def api(request):
-    results = list()
     if request.GET and request.GET.get("search"):
         s = request.GET.get("search")
-    else:
-        s = False
-
-    context = {'s': s}
-
-    if s:
-        results = get_search_result(s)
-
-    return JsonResponse(results, safe=False)
+        return JsonResponse(get_search_result(s), safe=False)
+ 
+    return JsonResponse([], safe=False)
     
