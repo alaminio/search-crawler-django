@@ -1,10 +1,10 @@
 # search-crawler-django
 
-A tiny Django web app that scrapes Bing search results and returns them as HTML or JSON.
+A tiny Django web app that scrapes DuckDuckGo search results and returns them as HTML or JSON.
 
 ## Features
 
-- Fast Bing search scraper via `requests` + `BeautifulSoup`
+- Search scraper via `requests` + `BeautifulSoup` (DuckDuckGo HTML endpoint)
 - Clean dark UI (Tailwind CDN)
 - JSON API endpoint (`/api/?search=<query>`) for programmatic use
 - Env-driven configuration; no secrets in code
@@ -76,7 +76,7 @@ See `.env.example`. Highlights:
 python manage.py test
 ```
 
-The scraper is mocked, so tests do not hit Bing.
+The scraper is mocked, so tests do not hit the upstream engine.
 
 ## Deployment
 
@@ -91,8 +91,8 @@ Set the env vars from `.env.example` in the platform's dashboard. Set `DJANGO_DE
 
 ## Notes
 
-- Scraping Bing is a best-effort operation. If Bing changes markup or throttles requests, the scraper returns an empty list instead of crashing.
-- This is a demo/learning project. For production search, prefer official APIs (Bing Web Search API, Brave Search API, etc.).
+- Scraping DuckDuckGo is a best-effort operation. If markup changes or requests are throttled, the scraper returns an empty list instead of crashing.
+- This is a demo/learning project. For production search, prefer official APIs (Brave Search API, Bing Web Search API, etc.).
 
 ## License
 

@@ -3,18 +3,26 @@ from unittest.mock import patch
 from django.test import TestCase
 
 
-BING_HTML = """
+DDG_HTML = """
 <html><body>
-<ol id="b_results">
-  <li class="b_algo">
-    <h2><a href="https://example.com/one">First result</a></h2>
-    <div class="b_caption"><p>Description one.</p></div>
-  </li>
-  <li class="b_algo">
-    <h2><a href="https://example.com/two">Second result</a></h2>
-    <div class="b_caption"><p>Description two.</p></div>
-  </li>
-</ol>
+<div class="results">
+  <div class="result results_links results_links_deep web-result">
+    <div class="result__body">
+      <h2 class="result__title">
+        <a class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fone&amp;rut=x">First result</a>
+      </h2>
+      <a class="result__snippet" href="https://example.com/one">Description one.</a>
+    </div>
+  </div>
+  <div class="result results_links results_links_deep web-result">
+    <div class="result__body">
+      <h2 class="result__title">
+        <a class="result__a" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Ftwo&amp;rut=x">Second result</a>
+      </h2>
+      <a class="result__snippet" href="https://example.com/two">Description two.</a>
+    </div>
+  </div>
+</div>
 </body></html>
 """
 
@@ -35,20 +43,20 @@ class SearchViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Search the web")
 
-    @patch("search.views.requests.get")
-    def test_search_parses_bing_html(self, mock_get):
-        mock_get.return_value = FakeResponse(BING_HTML.encode("utf-8"))
+    @patch("search.views.requests.post")
+    def test_search_parses_html(self, mock_post):
+        mock_post.return_value = FakeResponse(DDG_HTML.encode("utf-8"))
         response = self.client.get("/?search=hello")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "First result")
         self.assertContains(response, "Second result")
         self.assertContains(response, "Description one.")
 
-    @patch("search.views.requests.get")
-    def test_search_handles_network_error(self, mock_get):
+    @patch("search.views.requests.post")
+    def test_search_handles_network_error(self, mock_post):
         import requests
 
-        mock_get.side_effect = requests.RequestException("boom")
+        mock_post.side_effect = requests.RequestException("boom")
         response = self.client.get("/?search=hello")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No results found")
@@ -60,9 +68,9 @@ class ApiViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"query": "", "results": []})
 
-    @patch("search.views.requests.get")
-    def test_api_returns_parsed_results(self, mock_get):
-        mock_get.return_value = FakeResponse(BING_HTML.encode("utf-8"))
+    @patch("search.views.requests.post")
+    def test_api_returns_parsed_results(self, mock_post):
+        mock_post.return_value = FakeResponse(DDG_HTML.encode("utf-8"))
         response = self.client.get("/api/?search=hello")
         self.assertEqual(response.status_code, 200)
         payload = response.json()

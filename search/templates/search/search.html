@@ -136,7 +136,7 @@
         >
           <i class="fas fa-slash text-white/50"></i>
         </div>
-        <p>No results found. Bing may have blocked the request or the query is empty.</p>
+        <p>No results found. The upstream engine may have throttled the request. Try again.</p>
       </div>
       {% endif %}
 
@@ -171,8 +171,8 @@
         </div>
         <h1 class="text-2xl font-bold text-white">Search the web</h1>
         <p class="mx-auto mt-2 max-w-sm text-sm text-white/50">
-          A tiny Django app that scrapes Bing and returns clean results — as
-          HTML, or as JSON via
+          A tiny Django app that scrapes DuckDuckGo and returns clean results —
+          as HTML, or as JSON via
           <a href="{% url 'api_url' %}?search=hello" class="text-brand-500 hover:underline"
             >/api/</a>.
         </p>
@@ -192,11 +192,11 @@
           class="text-white/60 hover:text-white"
         >MD AL AMIN</a> · Powered by
         <a
-          href="https://www.bing.com"
+          href="https://duckduckgo.com"
           target="_blank"
           rel="noopener noreferrer"
           class="text-white/60 hover:text-white"
-        >bing.com</a>
+        >duckduckgo.com</a>
       </p>
     </footer>
   </body>
