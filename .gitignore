@@ -1,4 +1,28 @@
-.idea
-.vscode
-env
-__pycache__
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual envs
+env/
+venv/
+.venv/
+
+# Environment variables
+.env
+.env.local
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+
+# OS
+.DS_Store

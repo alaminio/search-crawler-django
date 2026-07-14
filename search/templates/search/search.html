@@ -1,126 +1,203 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% if s %}{{ s }}{% else %}Awesome Search{% endif %}</title>
+    <title>
+      {% if query %}{{ query }} · Search{% else %}Search Crawler{% endif %}
+    </title>
+    <meta
+      name="description"
+      content="A tiny Django app that scrapes Bing search results and returns them as HTML or JSON."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23ff2b5a'/><stop offset='100%25' stop-color='%237c5cff'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><circle cx='27' cy='27' r='11' fill='none' stroke='white' stroke-width='5'/><line x1='36' y1='36' x2='48' y2='48' stroke='white' stroke-width='5' stroke-linecap='round'/></svg>"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
     />
-    <script
-      defer
-      src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
-    ></script>
     <link
-      href="https://www.bing.com/sa/simg/bing_p_rr_teal_min.ico"
-      rel="shortcut icon"
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
     />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+            colors: {
+              ink: {
+                950: "#08090d",
+                900: "#0b0d12",
+                800: "#12151d",
+                700: "#1a1e2a"
+              },
+              brand: { 500: "#ff2b5a" },
+              iris: { 500: "#7c5cff" }
+            },
+            backgroundImage: {
+              "brand-grad": "linear-gradient(135deg, #ff2b5a 0%, #7c5cff 100%)"
+            },
+            boxShadow: { glow: "0 8px 30px rgba(255, 43, 90, 0.35)" }
+          }
+        }
+      };
+    </script>
     <style>
-      li {
-        margin-bottom: 10px;
-      }
-      h2 {
-        font-weight: bold;
-        font-size: 1.1em;
-      }
-      small {
-        font-size: 0.8em;
-        color: darkred;
-      }
-      .svg-inline--fa {
-        color: red;
-      }
-      .github .svg-inline--fa {
-        color: #333;
-      }
-      .menu li {
-        display: inline-block;
-      }
-      .menu li:first-child {
-        padding-right: 10px;
+      body {
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(124, 92, 255, 0.22), transparent 60%),
+          radial-gradient(900px 700px at 110% 10%, rgba(255, 43, 90, 0.16), transparent 60%),
+          linear-gradient(180deg, #08090d 0%, #0b0d12 100%);
+        background-attachment: fixed;
       }
     </style>
   </head>
-  <body>
-    <section class="section">
-      <div class="container">
-        <div class="section">
-          <div class="columns">
-            <div class="column">
-              <form method="GET">
-                <div class="field has-addons">
-                  <div class="control">
-                    <input
-                      autocomplete="off"
-                      name="search"
-                      class="input"
-                      type="text"
-                      placeholder="Search"
-                      value="{% if s %}{{ s }}{% endif %}"
-                    />
-                  </div>
-                  <div class="control">
-                    <button type="submit" class="button is-info">
-                      Search
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="column">
-              <ul class="menu">
-                <li class="github">
-                  <a
-                    target="_blank"
-                    href="https://github.com/m3alamin/search-crawler-django"
-                    title="View Code On Github"
-                  >
-                    <i class="far fa-eye"></i> <i class="fas fa-code"></i> On
-                    <i class="fab fa-github"></i
-                  ></a>
-                </li>
-                {% if s %}
-                <li>
-                  <a href="{% url 'api_url' %}?search={{ s }}">
-                    Looking for JSON?
-                  </a>
-                </li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="section">
-          <ul>
-            {% for result in results %}
-            <li>
-              <h2 class="">
-                <a href="{{ result.a }}">
-                  {{ result.title }}
-                </a>
-              </h2>
-              <small>{{ result.a }}</small>
-              <p>{{ result.text }}</p>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
+  <body class="min-h-screen font-sans text-white antialiased">
+    <header class="border-b border-white/5 backdrop-blur-xl bg-ink-950/60">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
+        <a href="/" class="flex items-center gap-2">
+          <span
+            class="grid h-9 w-9 place-items-center rounded-xl bg-brand-grad shadow-glow"
+          >
+            <i class="fas fa-search text-sm text-white"></i>
+          </span>
+          <span class="text-lg font-bold tracking-tight">
+            Search<span
+              class="bg-brand-grad bg-clip-text text-transparent"
+            >Crawler</span>
+          </span>
+        </a>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/alaminio/search-crawler-django"
+          class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <i class="fab fa-github"></i>
+          <span class="hidden sm:inline">View on GitHub</span>
+        </a>
       </div>
-    </section>
+    </header>
 
-    <footer class="footer">
-      <div class="container">
-        <div class="columns">
-          <div class="column">
-            Made with <i class="fas fa-heart"></i> by MD AL AMIN
-          </div>
-          <div class="column">
-            <p class="is-pulled-right">Powerd by bing.com</p>
-          </div>
-        </div>
+    <main class="mx-auto max-w-3xl px-4 pb-16 pt-10 sm:px-6">
+      <form method="GET" class="relative">
+        <i
+          class="fas fa-search pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-white/40"
+        ></i>
+        <input
+          autocomplete="off"
+          name="search"
+          type="search"
+          placeholder="Search the web…"
+          value="{{ query }}"
+          autofocus
+          class="h-14 w-full rounded-full border border-white/10 bg-white/5 pl-14 pr-32 text-base text-white placeholder:text-white/40 outline-none transition-colors duration-150 focus:border-brand-500 focus:bg-white/10 focus:ring-4 focus:ring-brand-500/25"
+        />
+        <button
+          type="submit"
+          class="absolute right-2 top-1/2 h-10 -translate-y-1/2 rounded-full bg-brand-grad px-5 text-sm font-semibold text-white shadow-glow transition-transform hover:brightness-110 active:scale-95"
+        >
+          Search
+        </button>
+      </form>
+
+      {% if query %}
+      <div class="mt-6 flex items-center justify-between text-xs text-white/50">
+        <p>
+          Results for
+          <span class="font-semibold text-white">{{ query }}</span>
+        </p>
+        <a
+          href="{% url 'api_url' %}?search={{ query }}"
+          class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 font-medium text-white/70 transition-colors hover:text-white"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i class="fas fa-code text-[10px]"></i>
+          <span>JSON</span>
+        </a>
       </div>
+      {% endif %}
+
+      {% if query and not results %}
+      <div
+        class="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/60"
+      >
+        <div
+          class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-white/5"
+        >
+          <i class="fas fa-slash text-white/50"></i>
+        </div>
+        <p>No results found. Bing may have blocked the request or the query is empty.</p>
+      </div>
+      {% endif %}
+
+      <ul class="mt-8 space-y-4">
+        {% for result in results %}
+        <li
+          class="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
+        >
+          <a href="{{ result.url }}" target="_blank" rel="noopener noreferrer">
+            <p class="mb-1 line-clamp-1 text-xs text-white/40">{{ result.url }}</p>
+            <h2
+              class="text-base font-semibold leading-snug text-white group-hover:text-brand-500"
+            >
+              {{ result.title }}
+            </h2>
+          </a>
+          {% if result.snippet %}
+          <p class="mt-2 text-sm leading-relaxed text-white/60">
+            {{ result.snippet }}
+          </p>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% if not query %}
+      <div class="mt-16 text-center">
+        <div
+          class="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-brand-grad shadow-glow"
+        >
+          <i class="fas fa-globe text-2xl text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Search the web</h1>
+        <p class="mx-auto mt-2 max-w-sm text-sm text-white/50">
+          A tiny Django app that scrapes Bing and returns clean results — as
+          HTML, or as JSON via
+          <a href="{% url 'api_url' %}?search=hello" class="text-brand-500 hover:underline"
+            >/api/</a>.
+        </p>
+      </div>
+      {% endif %}
+    </main>
+
+    <footer
+      class="border-t border-white/5 px-4 py-8 text-center text-xs text-white/40"
+    >
+      <p>
+        Built by
+        <a
+          href="https://alamin.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-white/60 hover:text-white"
+        >MD AL AMIN</a> · Powered by
+        <a
+          href="https://www.bing.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-white/60 hover:text-white"
+        >bing.com</a>
+      </p>
     </footer>
   </body>
 </html>
