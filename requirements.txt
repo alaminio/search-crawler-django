@@ -1,4 +1,4 @@
-Django==4.2.20
+Django==5.2.16
 beautifulsoup4==4.12.3
 requests==2.32.3
 gunicorn==23.0.0
